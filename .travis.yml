@@ -16,7 +16,7 @@ install:
   - pip install -U pip
 
 script:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
   - export PYTHON_PIP_VERSION=$(python -c "from __future__ import print_function; import pip; print(pip.__version__)")
   - export PYTHON_VERSION=$(python -c "from __future__ import print_function; import sys; print('.'.join(map(str,sys.version_info[0:3])))")
-  - ./build_script.sh
+  - ./build.sh
