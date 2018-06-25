@@ -1,0 +1,19 @@
+dist: trusty
+sudo: true
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+
+install:
+  - pip install -U pip
+
+script:
+  - PYTHON_PIP_VERSION=$(python -c "from __future__ import print_function; import pip; print(pip.__version__)")
+  - PYTHON_VERSION=$(python -c "from __future__ import print_function; import sys; print('.'.join(map(str,sys.version_info[0:3])))")
+  - echo ${TRAVIS_PYTHON_VERSION}
+  # - docker pull masterodin/python:${TRAVIS_PYTHON_VERSION}
