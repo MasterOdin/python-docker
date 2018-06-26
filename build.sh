@@ -18,7 +18,7 @@ if [ $? -eq 0 ]; then
   echo "    Python: ${PY_VERSION}"
   echo "    Pip   : ${PYPI_VERSION}"
 
-  if [ "${PY_VERSION}" = "${PYTHON_VERSION}"] && [ "${PYPI_VERSION}" = "${PYTHON_PIP_VERSION}" ]; then
+  if [ "${PY_VERSION}" = "${PYTHON_VERSION}" ] && [ "${PYPI_VERSION}" = "${PYTHON_PIP_VERSION}" ]; then
     echo "Docker and Local versions match. Doing nothing."
     exit 0
   fi
