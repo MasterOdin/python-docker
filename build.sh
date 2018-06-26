@@ -8,7 +8,7 @@ echo "    Pip   : ${PYTHON_PIP_VERSION}"
 echo ""
 
 IMAGE_NAME="${USERNAME}/${IMAGE}:${TRAVIS_PYTHON_VERSION}"
-docker pull ${IMAGE_NAME}
+docker pull ${IMAGE_NAME} > /dev/null 2>&1
 set -e
 if [ $? -eq 0 ]; then
   # check python and pip version
@@ -24,5 +24,7 @@ if [ $? -eq 0 ]; then
   fi
 fi
 
+# Hack for getting around the fact that the version reported by the binary does not match the version that's downloaded
+if [ "${PYTHON_VERSION}" = "3.7.0" ]; then PYTHON_VERSION="3.7.0rc1"; fi
 docker build -t ${IMAGE_NAME} --build-arg PYTHON_VERSION="${PYTHON_VERSION}" --build-arg PYTHON_PIP_VERSION="${PYTHON_PIP_VERSION}" .
 docker push ${IMAGE_NAME}
