@@ -9,10 +9,11 @@ echo ""
 
 IMAGE_NAME="${USERNAME}/${IMAGE}:${TRAVIS_PYTHON_VERSION}"
 docker pull ${IMAGE_NAME}
+set -ex
 if [ $? -eq 0 ]; then
   # check python and pip version
   PY_VERSION=$(docker run masterodin/python:3.6 python --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}")
-  PYPI_VERSION=$(dockerrun ${IMAGE_NAME} pip --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
+  PYPI_VERSION=$(docker run ${IMAGE_NAME} pip --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
   echo "Docker:"
   echo "    Python: ${PY_VERSION}"
   echo "    Pip   : ${PYPI_VERSION}"
