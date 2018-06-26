@@ -12,6 +12,7 @@ ENV PATH /usr/local/bin:$PATH
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
+ENV PYTHONIOENCODING UTF-8
 
 # runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -87,10 +88,11 @@ RUN set -ex \
 # make some useful symlinks that are expected to exist
 RUN PYTHON_MAJOR=$(echo "${PYTHON_VERSION}" | cut -c1 -) \
   && cd /usr/local/bin \
-	&& ln -s idle3 idle \
+  && rm -rf idle pydoc python python-config \
+	&& ln -s "idle${PYTHON_MAJOR}" idle \
 	&& ln -s "pydoc${PYTHON_MAJOR}" pydoc \
 	&& ln -s "python${PYTHON_MAJOR}" python \
-	&& ln -s "python${PYTHON_MAJOR}-config" python-config \
+	&& ln -s "python${PYTHON_MAJOR}-config" python-config
 
 RUN set -ex; \
 	apt-get update; \
