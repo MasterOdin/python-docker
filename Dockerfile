@@ -14,6 +14,19 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 ENV PYTHONIOENCODING UTF-8
 
+RUN PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c1-3 -); \
+  if [ "${PY_VERSION}" = "3.3" ] || [ "${PY_VERSION}" = "3.4" ]; then \
+    apt-get update; \
+    apt-get install -y --no-install-recommends wget; \
+    wget http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb -O /tmp/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb; \
+    apt-get purge --auto-remove -y wget; \
+    dpkg --install /tmp/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb; \
+    rm -rf /tmp/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb; \
+  else \
+    apt-get install -y --no-install-recommends libssl1.1; \
+  fi; \
+  rm -rf /var/lib/apt/lists/*
+
 # runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
@@ -25,19 +38,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		netbase \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c1-3 -); \
-  if [ "${PY_VERSION}" = "3.3" ] || [ "${PY_VERSION}" = "3.4" ]; then \
-    apt-get update; \ 
-    apt-get install -y --no-install-recommends wget; \
-    wget http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb -O /tmp/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb; \
-    dpkg --install /tmp/libssl1.0.0_1.0.1t-+deb8u6_amd64.deb; \
-    rm -rf /tmp/libssl1.0.0_1.0.1t-+deb8u6_amd64.deb; \
-    apt-get purge --auto-remove -y wget; \
-  else \
-    apt-get install -y --no-install-recommends libssl1.1; \
-  fi
-
 RUN set -ex \
+  && dpkg-query -l 'libssl*' \
   && PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c1-3 -) \
   && GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
   && [ "${PY_VERSION}" = "2.7" ] && GPG_KEY="C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF" || : \
@@ -65,8 +67,14 @@ RUN set -ex \
 # as of Stretch, "gpg" is no longer included by default
 		$(command -v gpg > /dev/null || echo 'gnupg dirmngr') \
 	" \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz" \
+	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/*; \
+  if [ "${PY_VERSION}" = "3.3" ] || [ "${PY_VERSION}" = "3.4" ]; then \
+    apt-get purge -y --auto-remove libssl-dev; \
+    wget http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl-dev_1.0.1t-1+deb8u8_amd64.deb -O /tmp/libssl-dev_1.0.1t-1+deb8u8_amd64.deb; \
+    dpkg --install /tmp/libssl-dev_1.0.1t-1+deb8u8_amd64.deb; \
+    rm -rf /tmp/libssl-dev_1.0.1t-1+deb8u8_amd64.deb; \
+  fi; \
+	wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz" \
 	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --keyserver ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
