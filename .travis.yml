@@ -17,5 +17,5 @@ script:
   - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
   - export PYTHON_PIP_VERSION=$(python -c "from __future__ import print_function; import pip; print(pip.__version__)")
   - export PYTHON_VERSION=$(python -c "from __future__ import print_function; import sys; print('.'.join(map(str,sys.version_info[0:3])))")
-  - [ "${PYTHON_VERSION}" = "3.7.0" ] && PYTHON_VERSION="3.7.0rc1"
+  - if [ "${PYTHON_VERSION}" = "3.7.0" ]; then PYTHON_VERSION="3.7.0rc1"; fi
   - ./build.sh
