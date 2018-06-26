@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -ex \
-  && PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c3 -) \
+  && PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c1-3 -) \
   && GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
   && [ "${PY_VERSION}" = "2.7" ] && GPG_KEY="C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF" || : \
   && [ "${PY_VERSION}" = "3.4" ] && GPG_KEY="97FC712E4C024BBEA48A61ED3A5CA953F73C700D" || : \
