@@ -25,9 +25,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		netbase \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-
 RUN set -ex \
+  && GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
+  && [ "${PYTHON_VERSION}" = "2.7" ] && GPG_KEY="C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF" || : \
+  && [ "${PYTHON_VERSION}" = "3.4" ] && GPG_KEY="97FC712E4C024BBEA48A61ED3A5CA953F73C700D" || : \
+  && [ "${PYTHON_VERSION}" = "3.5" ] && GPG_KEY="97FC712E4C024BBEA48A61ED3A5CA953F73C700D" || : \
 	&& buildDeps=" \
 		dpkg-dev \
 		gcc \
