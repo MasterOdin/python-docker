@@ -4,7 +4,7 @@ IMAGE=python
 
 echo "Local:"
 echo "    Python: ${PYTHON_VERSION}"
-echo "    Pip   : ${PYPI_VERSION}"
+echo "    Pip   : ${PYTHON_PIP_VERSION}"
 echo ""
 
 IMAGE_NAME="${USERNAME}/${IMAGE}:${TRAVIS_PYTHON_VERSION}"
