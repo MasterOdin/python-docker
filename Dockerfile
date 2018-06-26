@@ -1,13 +1,10 @@
-#
-# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
-#
-# PLEASE DO NOT EDIT IT DIRECTLY.
-#
+# Builds off of https://github.com/docker-library/python/blob/master/3.6/stretch/slim/Dockerfile
 
 FROM debian:stretch-slim
 
 ARG PYTHON_VERSION
-ARG PYTHON_PIP_VERSION 10.0.1
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ARG PYTHON_PIP_VERSION
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -54,9 +51,8 @@ RUN set -ex \
 		$(command -v gpg > /dev/null || echo 'gnupg dirmngr') \
 	" \
 	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	\
-	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
-	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
+	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz" \
+	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-${PYTHON_VERSION}.tar.xz.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
 	&& gpg --batch --verify python.tar.xz.asc python.tar.xz \
@@ -64,7 +60,6 @@ RUN set -ex \
 	&& mkdir -p /usr/src/python \
 	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
 	&& rm python.tar.xz \
-	\
 	&& cd /usr/src/python \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
@@ -77,9 +72,7 @@ RUN set -ex \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& ldconfig \
-	\
 	&& apt-get purge -y --auto-remove $buildDeps \
-	\
 	&& find /usr/local -depth \
 		\( \
 			\( -type d -a \( -name test -o -name tests \) \) \
@@ -89,32 +82,26 @@ RUN set -ex \
 	&& rm -rf /usr/src/python
 
 # make some useful symlinks that are expected to exist
-RUN cd /usr/local/bin \
+RUN PYTHON_MAJOR=$(echo "${PYTHON_VERSION}" | cut -c1 -) \
+  && cd /usr/local/bin \
 	&& ln -s idle3 idle \
-	&& ln -s pydoc3 pydoc \
-	&& ln -s python3 python \
-	&& ln -s python3-config python-config
-
-# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-
+	&& ln -s "pydoc${PYTHON_MAJOR}" pydoc \
+	&& ln -s "python${PYTHON_MAJOR}" python \
+	&& ln -s "python${PYTHON_MAJOR}-config" python-config \
+  && ls -la /usr/local/bin
 
 RUN set -ex; \
-	\
 	apt-get update; \
 	apt-get install -y --no-install-recommends wget; \
 	rm -rf /var/lib/apt/lists/*; \
-	\
 	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
 	apt-get purge -y --auto-remove wget; \
-	\
 	python get-pip.py \
 		--disable-pip-version-check \
 		--no-cache-dir \
 		"pip==$PYTHON_PIP_VERSION" \
 	; \
 	pip --version; \
-	\
 	find /usr/local -depth \
 		\( \
 			\( -type d -a \( -name test -o -name tests \) \) \
@@ -123,4 +110,4 @@ RUN set -ex; \
 		\) -exec rm -rf '{}' +; \
 	rm -f get-pip.py
 
-CMD ["python3"]
+CMD ["/usr/local/bin/python"]
