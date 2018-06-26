@@ -1,4 +1,4 @@
-dist: xenial
+dist: trusty
 sudo: true
 language: python
 python:
@@ -9,8 +9,8 @@ python:
   - "3.5-dev"
   - "3.6"
   - "3.6-dev"
+  # while trusty uses an older version of 3.7, it doesn't matter as we're using docker
   - "3.7-dev"
-  - "3.8-dev"
 
 install:
   - pip install -U pip
