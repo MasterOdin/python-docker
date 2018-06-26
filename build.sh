@@ -6,6 +6,7 @@ run_build=false
 docker pull masterodin/python:${TRAVIS_PYTHON_VERSION}
 if [ $? -eq 0 ]; then
   # check python and pip version
+  echo "need to check"
 else
   run_build=true
 fi
