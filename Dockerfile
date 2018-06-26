@@ -22,9 +22,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		libgdbm3 \
 		libreadline7 \
 		libsqlite3-0 \
-		libssl1.1 \
 		netbase \
 	&& rm -rf /var/lib/apt/lists/*
+
+RUN PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c1-3 -); \
+  if [ "${PY_VERSION}" = "3.3" ] || [ "${PY_VERSION}" = "3.4" ]; then \
+    apt-get update; \ 
+    apt-get install -y --no-install-recommends wget; \
+    wget http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb -O /tmp/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb; \
+    dpkg --install /tmp/libssl1.0.0_1.0.1t-+deb8u6_amd64.deb; \
+    rm -rf /tmp/libssl1.0.0_1.0.1t-+deb8u6_amd64.deb; \
+    apt-get purge --auto-remove -y wget; \
+  else \
+    apt-get install -y --no-install-recommends libssl1.1; \
+  fi
 
 RUN set -ex \
   && PY_VERSION=$(echo "${PYTHON_VERSION}" | cut -c1-3 -) \
