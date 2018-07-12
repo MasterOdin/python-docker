@@ -1,14 +1,16 @@
+group: travis_latest
 dist: trusty
 sudo: true
 language: python
-python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  # while trusty uses an older version of 3.7, it doesn't matter as we're using docker
-  - "3.7-dev"
+jobs:
+  include:
+    - python: "2.7"
+    - python: "3.3"
+    - python: "3.4"
+    - python: "3.5"
+    - python: "3.6"
+    - python: "3.7"
+      dist: xenial      
 
 install:
   - pip install -U pip
