@@ -1,6 +1,7 @@
 ## Docker configuration details
 USERNAME=masterodin
 IMAGE=python
+set -v
 
 echo "Local:"
 echo "    Python: ${PYTHON_VERSION}"
