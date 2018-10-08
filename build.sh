@@ -14,9 +14,9 @@ set -e
 if [ "${LAST}" -eq 0 ]; then
   # check python and pip version
   PY_VERSION=$(docker run --rm ${IMAGE_NAME} python --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}")
-  PYPI_VERSION=$(docker run --rm ${IMAGE_NAME} pip --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
+  PYPI_VERSION=$(docker run --rm ${IMAGE_NAME} pip --version | cut -c1-14 | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
   if [ -z "${PYPI_VERSION}" ]; then
-    PYPI_VERSION=$(docker run --rm ${IMAGE_NAME} pip --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
+    PYPI_VERSION=$(docker run --rm ${IMAGE_NAME} pip --version | cut -c1-14 | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
   fi
   echo "Docker:"
   echo "    Python: ${PY_VERSION}"
