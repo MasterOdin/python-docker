@@ -35,4 +35,7 @@ fi
 echo ""
 
 docker build -t ${IMAGE_NAME} --build-arg PYTHON_VERSION="${PYTHON_VERSION}" --build-arg PYTHON_PIP_VERSION="${PYTHON_PIP_VERSION}" .
-docker push ${IMAGE_NAME}
+if [ "${TRAVIS_BRANCH}" = "master" ] && [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+  docker push ${IMAGE_NAME}
+fi
+
