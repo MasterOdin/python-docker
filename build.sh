@@ -9,8 +9,9 @@ echo ""
 
 IMAGE_NAME="${USERNAME}/${IMAGE}:${TRAVIS_PYTHON_VERSION}"
 docker pull ${IMAGE_NAME} > /dev/null 2>&1
+LAST=$?
 set -e
-if [ "$?" -eq 0 ]; then
+if [ "${LAST}" -eq 0 ]; then
   # check python and pip version
   PY_VERSION=$(docker run -t ${IMAGE_NAME} python --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}")
   PYPI_VERSION=$(docker run -t ${IMAGE_NAME} pip --version | grep -o "[0-9]\{1,2\}.[0-9]\{1,2\}.[0-9]\{1,2\}" | head -1)
@@ -22,6 +23,8 @@ if [ "$?" -eq 0 ]; then
     echo "Docker and Local versions match. Doing nothing."
     exit 0
   fi
+else
+  echo "No docker build found on Hub. Building fresh image."
 fi
 
 docker build -t ${IMAGE_NAME} --build-arg PYTHON_VERSION="${PYTHON_VERSION}" --build-arg PYTHON_PIP_VERSION="${PYTHON_PIP_VERSION}" .
